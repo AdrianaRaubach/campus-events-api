@@ -1,17 +1,18 @@
-# Node.js API Template
+# Campus Events API
 
-> A Node.js API template with Express, TypeScript and PostgreSQL
+> A REST API for managing campus events — people, events and registrations. Built with Node.js, Express, TypeScript and PostgreSQL.
 
-[![CI](https://github.com/miikkaylisiurunen/template-node-express/actions/workflows/ci.yml/badge.svg)](https://github.com/miikkaylisiurunen/template-node-express/actions/workflows/ci.yml)
+[![CI](https://github.com/AdrianaRaubach/campus-events-api/actions/workflows/ci.yml/badge.svg)](https://github.com/AdrianaRaubach/campus-events-api/actions/workflows/ci.yml)
 
 ## Table of contents
 
+- [About the project](#about-the-project)
 - [Features](#features)
 - [How to use](#how-to-use)
   - [Requirements](#requirements)
   - [Getting started](#getting-started)
   - [Scripts](#scripts)
-  - [Default routes](#default-routes)
+  - [Available routes](#available-routes)
 - [Directory structure](#directory-structure)
 - [Consistent error handling](#consistent-error-handling)
   - [Throwing consistent errors](#throwing-consistent-errors)
@@ -20,6 +21,10 @@
   - [Running tests](#running-tests)
   - [Automated tests](#automated-tests)
 - [Continuous integration](#continuous-integration)
+
+## About the project
+
+**Campus Events API** is a REST API that models the domain of academic campus events. It allows registering people, creating events (with date, location and capacity) and managing participant registrations, including duplicate checks and capacity control.
 
 ## Features
 
@@ -48,11 +53,11 @@
 
 1. Clone the repository:
    ```
-   git clone https://github.com/miikkaylisiurunen/template-node-express.git
+   git clone https://github.com/AdrianaRaubach/campus-events-api.git
    ```
 2. Change to the project directory:
    ```
-   cd template-node-express
+   cd campus-events-api
    ```
 3. Copy `.env.example` to `.env`:
    ```
@@ -86,14 +91,30 @@ db:up       # start the database services with docker compose
 db:down     # stop and remove the database services
 ```
 
-### Default routes
+### Available routes
+
+Currently implemented routes:
 
 ```
-GET /people         # get all people from the database
-POST /people        # add a new person with required body properties: "name" and "age"
+GET  /people        # list all registered people
+POST /people        # register a new person (body: "name" and "age")
 
-GET /health         # basic health check (api status)
-GET /health/deep    # complete health check (api status + database connection)
+GET  /health        # basic health check (api status)
+GET  /health/deep   # complete health check (api status + database connection)
+```
+
+Planned routes (in development as part of upcoming issues):
+
+```
+# Events
+POST   /events                              # create a new event
+GET    /events                              # list all events
+GET    /events/:id                          # get an event by id
+
+# Registrations
+POST   /events/:id/registrations            # register a person for an event
+GET    /events/:id/registrations            # list registrations for an event
+DELETE /events/:id/registrations/:personId  # cancel a registration
 ```
 
 ## Directory structure
@@ -114,7 +135,7 @@ GET /health/deep    # complete health check (api status + database connection)
 
 ### Throwing consistent errors
 
-To ensure consistent error responses and HTTP status codes, use the `HttpError` class when throwing an error. This custom error class is included in the template and provides a straightforward way to throw errors.
+To ensure consistent error responses and HTTP status codes, use the `HttpError` class when throwing an error. This custom error class is included in the project and provides a straightforward way to throw errors.
 
 ### Error handler middleware
 
@@ -132,7 +153,7 @@ You can specify your own `status` and `message` when using the custom `HttpError
 
 ## Testing
 
-This template comes with tests powered by [Vitest](https://vitest.dev) and [Supertest](https://github.com/ladjs/supertest) to ensure the quality and stability of your application through unit and integration testing.
+This project uses [Vitest](https://vitest.dev) and [Supertest](https://github.com/ladjs/supertest) to ensure quality and stability through unit and integration testing.
 
 ### Running tests
 
@@ -150,11 +171,11 @@ A GitHub Actions workflow is included to automatically run tests. Refer to the [
 
 ## Continuous integration
 
-This template comes with pre-configured GitHub Actions workflows to automate continuous integration (CI) and ensure that your code is always tested before being merged into the main branch. The workflows run automatically on every push to the `main` branch, or when a pull request is opened, reopened, or synchronized.
+This project has pre-configured GitHub Actions workflows to automate continuous integration (CI) and ensure that the code is always tested before being merged into the main branch. The workflows run automatically on every push to the `main` branch, or when a pull request is opened, reopened, or synchronized.
 
 The workflows included are:
 
 - `ci.yml` - Runs tests and builds the project, preventing issues and bugs from making their way into production.
-- `lint.yml` - Runs ESLint to find linting issues, ensuring that your code is always in compliance with your ESLint rules, which can improve code quality and consistency.
+- `lint.yml` - Runs ESLint to find linting issues, ensuring that the code is always in compliance with the ESLint rules, which improves code quality and consistency.
 
-Additionally, a `dependabot.yml` configuration is included and run automatically on a weekly basis. It detects outdated npm packages and creates pull requests to update them, ensuring that your npm packages are always up to date, which can improve security and prevent bugs caused by outdated packages.
+Additionally, a `dependabot.yml` configuration is included and runs automatically on a weekly basis. It detects outdated npm packages and creates pull requests to update them, ensuring that npm packages are always up to date, which improves security and prevents bugs caused by outdated packages.
