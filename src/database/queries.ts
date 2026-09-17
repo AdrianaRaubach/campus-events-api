@@ -1,11 +1,12 @@
 import { HttpError } from '../errors';
 import { getPool } from './pool';
-import { Person } from './types';
+import { NewPerson, Person } from './types';
 
 export interface Queries {
   checkConnection(): Promise<boolean>;
   getAllPeople(): Promise<Person[]>;
-  addPerson(person: Person): Promise<Person>;
+  getPersonById(id: number): Promise<Person | undefined>;
+  addPerson(person: NewPerson): Promise<Person>;
 }
 
 export const makeQueries = (databaseUrl: string): Queries => {
@@ -23,18 +24,30 @@ export const makeQueries = (databaseUrl: string): Queries => {
     getAllPeople: async () => {
       const { rows } = await pool.query<Person>(
         `
-        SELECT name, age
+        SELECT id, name, age
         FROM people
+        ORDER BY id
         `,
       );
       return rows;
+    },
+    getPersonById: async (id) => {
+      const { rows } = await pool.query<Person, [number]>(
+        `
+        SELECT id, name, age
+        FROM people
+        WHERE id = $1
+        `,
+        [id],
+      );
+      return rows[0];
     },
     addPerson: async ({ name, age }) => {
       const { rows, rowCount } = await pool.query<Person, [string, number]>(
         `
         INSERT INTO people (name, age)
         VALUES ($1, $2)
-        RETURNING name, age
+        RETURNING id, name, age
         `,
         [name, age],
       );
