@@ -65,15 +65,28 @@ describe('queries', () => {
       const people1 = await queries.getAllPeople();
       expect(people1).toHaveLength(0);
 
-      await queries.addPerson({ name: 'Joe', age: 20 });
-      await queries.addPerson({ name: 'John', age: 21 });
+      const joe = await queries.addPerson({ name: 'Joe', age: 20 });
+      const john = await queries.addPerson({ name: 'John', age: 21 });
+      expect(joe).toEqual({ id: expect.any(Number), name: 'Joe', age: 20 });
+      expect(john).toEqual({ id: expect.any(Number), name: 'John', age: 21 });
 
       const people2 = await queries.getAllPeople();
       expect(people2).toHaveLength(2);
-      expect(people2).toEqual([
-        { name: 'Joe', age: 20 },
-        { name: 'John', age: 21 },
-      ]);
+      expect(people2).toEqual([joe, john]);
+    });
+  });
+
+  describe('.getPersonById', () => {
+    it('returns the matching person', async () => {
+      const joe = await queries.addPerson({ name: 'Joe', age: 20 });
+
+      const found = await queries.getPersonById(joe.id);
+      expect(found).toEqual(joe);
+    });
+
+    it('returns undefined when person does not exist', async () => {
+      const found = await queries.getPersonById(999999);
+      expect(found).toBeUndefined();
     });
   });
 });
