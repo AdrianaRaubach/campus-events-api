@@ -1,7 +1,7 @@
 {
-  "name": "template-node-express",
+  "name": "campus-events-api",
   "version": "0.0.1",
-  "description": "",
+  "description": "REST API for managing campus events (people, events and registrations) built with Node.js, Express, TypeScript and PostgreSQL.",
   "main": "src/index.ts",
   "scripts": {
     "start": "node dist/index.js",
