@@ -20,6 +20,8 @@
   - [Running tests](#running-tests)
   - [Automated tests](#automated-tests)
 - [Continuous integration](#continuous-integration)
+- [Deploy (Render)](#deploy-render)
+- [Alternativas de deploy (pesquisa)](#alternativas-de-deploy-pesquisa)
 
 ## Features
 
@@ -158,3 +160,52 @@ The workflows included are:
 - `lint.yml` - Runs ESLint to find linting issues, ensuring that your code is always in compliance with your ESLint rules, which can improve code quality and consistency.
 
 Additionally, a `dependabot.yml` configuration is included and run automatically on a weekly basis. It detects outdated npm packages and creates pull requests to update them, ensuring that your npm packages are always up to date, which can improve security and prevent bugs caused by outdated packages.
+
+## Deploy (Render)
+
+A API foi publicada no [Render](https://render.com) usando o `Dockerfile` e o Blueprint `render.yaml`, com PostgreSQL gerenciado do próprio Render.
+
+**URL pública:** https://campus-events-api-x3ci.onrender.com/
+
+### Como foi publicada
+
+1. Foi feito push do `render.yaml` para a branch `main` no GitHub.
+2. No painel do Render, foi usada a opção **New → Blueprint**, selecionando o repositório. O Render criou o web service (`campus-events-api`) e o banco PostgreSQL (`campus-events-db`).
+3. Aguardou-se o build e o status **Live**.
+
+### Variáveis de ambiente
+
+| Variável       | Origem                                                                 |
+| -------------- | ---------------------------------------------------------------------- |
+| `DATABASE_URL` | Preenchida automaticamente pelo Blueprint (connection string do banco) |
+| `PORT`         | Definida pelo Render (10000); a aplicação a lê via `process.env.PORT`  |
+| `NODE_ENV`     | `production`                                                           |
+
+As migrations rodam automaticamente na inicialização da API (`applyMigrations` em `src/index.ts`).
+
+### Validação após o deploy
+
+Após a publicação, foram validados os endpoints abaixo:
+
+```
+https://campus-events-api-x3ci.onrender.com/health        # {"status":"healthy","timestamp":"..."}
+https://campus-events-api-x3ci.onrender.com/health/deep   # confirma conexão com o banco
+curl.exe -X POST https://campus-events-api-x3ci.onrender.com/people -H "Content-Type: application/json" -d "{\`"name\`":\`"Adriana\`",\`"age\`":31}"
+https://campus-events-api-x3ci.onrender.com/people        # lista a pessoa criada (persistida no PostgreSQL)
+```
+
+**Observação:** no plano gratuito o serviço "dorme" após inatividade (a primeira requisição pode levar ~1 min) e o banco gratuito expira após 30 dias.
+
+### Evidências
+
+![alt text](image.png)
+![alt text](image-5.png)
+![alt text](image-1.png)
+![alt text](image-4.png)
+![alt text](image-6.png)
+
+## Alternativas de deploy (pesquisa)
+
+A pesquisa da Parte B compara o deploy no Render com duas abordagens diferentes: **VPS com Docker Compose e Nginx** e **AWS ECS Fargate + RDS**. Para cada uma, o documento cobre arquitetura, ferramentas, build/deploy, secrets, rollback, vantagens, limitações e complexidade.
+
+Documento completo: [docs/deploy-alternativas.md](docs/deploy-alternativas.md)
