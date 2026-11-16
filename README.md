@@ -21,6 +21,7 @@
   - [Automated tests](#automated-tests)
 - [Continuous integration](#continuous-integration)
 - [Deploy (Render)](#deploy-render)
+- [Alternativas de deploy (pesquisa)](#alternativas-de-deploy-pesquisa)
 
 ## Features
 
@@ -202,3 +203,9 @@ https://campus-events-api-x3ci.onrender.com/people        # lista a pessoa criad
 ![alt text](image-1.png)
 ![alt text](image-4.png)
 ![alt text](image-6.png)
+
+## Alternativas de deploy (pesquisa)
+
+A pesquisa da Parte B compara o deploy no Render com duas abordagens diferentes: **VPS com Docker Compose e Nginx** e **AWS ECS Fargate + RDS**. Para cada uma, o documento cobre arquitetura, ferramentas, build/deploy, secrets, rollback, vantagens, limitações e complexidade.
+
+Documento completo: [docs/deploy-alternativas.md](docs/deploy-alternativas.md)
