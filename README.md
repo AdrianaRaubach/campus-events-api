@@ -98,6 +98,9 @@ POST /people        # add a new person with required body properties: "name" and
 
 GET /health         # basic health check (api status)
 GET /health/deep    # complete health check (api status + database connection)
+
+GET /docs           # interactive API documentation (Swagger UI)
+GET /docs.json      # OpenAPI 3 specification
 ```
 
 ## Directory structure
