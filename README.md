@@ -4,6 +4,8 @@
 
 [![CI](https://github.com/miikkaylisiurunen/template-node-express/actions/workflows/ci.yml/badge.svg)](https://github.com/miikkaylisiurunen/template-node-express/actions/workflows/ci.yml)
 
+> 📄 **Documentação final do projeto:** [docs/documentacao-final.md](docs/documentacao-final.md)
+
 ## Table of contents
 
 - [Features](#features)
