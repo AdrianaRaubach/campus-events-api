@@ -7,6 +7,7 @@ export const makePeopleRoutes = (ctx: AppContext): Router => {
   const controller = makePeopleController(ctx);
 
   router.get('/', controller.getAllPeople);
+  router.get('/:id', controller.getPersonById);
   router.post('/', controller.addPerson);
 
   return router;

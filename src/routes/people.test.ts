@@ -48,17 +48,50 @@ describe('people router', () => {
       expect(response1.body).toHaveLength(0);
 
       // add people
-      await queries.addPerson({ name: 'John', age: 20 });
-      await queries.addPerson({ name: 'Joe', age: 21 });
+      const john = await queries.addPerson({ name: 'John', age: 20 });
+      const joe = await queries.addPerson({ name: 'Joe', age: 21 });
 
       const response2 = await request(app).get('/people');
       expect(response2.statusCode).toBe(200);
       expect(response2.headers['content-type']).toContain('application/json');
       expect(response2.body).toHaveLength(2);
       expect(response2.body).toEqual([
-        { name: 'John', age: 20 },
-        { name: 'Joe', age: 21 },
+        { id: john.id, name: 'John', age: 20 },
+        { id: joe.id, name: 'Joe', age: 21 },
       ]);
+    });
+  });
+
+  describe('GET /people/:id', () => {
+    it('responds with the matching person', async () => {
+      const joe = await queries.addPerson({ name: 'Joe', age: 21 });
+
+      const response = await request(app).get(`/people/${joe.id}`);
+      expect(response.statusCode).toBe(200);
+      expect(response.headers['content-type']).toContain('application/json');
+      expect(response.body).toEqual({ id: joe.id, name: 'Joe', age: 21 });
+    });
+
+    it('responds with status 404 when person does not exist', async () => {
+      const response = await request(app).get('/people/999999');
+      expect(response.statusCode).toBe(404);
+      expect(response.headers['content-type']).toContain('application/json');
+      expect(response.body).toEqual({
+        status: 404,
+        message: expect.any(String),
+        name: expect.any(String),
+      });
+    });
+
+    it('responds with status 400 when id is not a number', async () => {
+      const response = await request(app).get('/people/not-a-number');
+      expect(response.statusCode).toBe(400);
+      expect(response.headers['content-type']).toContain('application/json');
+      expect(response.body).toEqual({
+        status: 400,
+        message: expect.any(String),
+        name: expect.any(String),
+      });
     });
   });
 
@@ -71,11 +104,20 @@ describe('people router', () => {
       const response = await request(app).post('/people').send({ name: 'Joe', age: 21 });
       expect(response.statusCode).toBe(200);
       expect(response.headers['content-type']).toContain('application/json');
-      expect(response.body).toEqual({ name: 'Joe', age: 21 });
+      expect(response.body).toEqual({ id: expect.any(Number), name: 'Joe', age: 21 });
 
       // make sure it was added to database
       const people2 = await queries.getAllPeople();
       expect(people2).toHaveLength(1);
+      expect(people2[0].id).toBe(response.body.id);
+    });
+
+    it('ignores a client-supplied id and uses the database-generated one', async () => {
+      const response = await request(app)
+        .post('/people')
+        .send({ id: 999999, name: 'Joe', age: 21 });
+      expect(response.statusCode).toBe(200);
+      expect(response.body.id).not.toBe(999999);
     });
 
     it('responds with status 400 with invalid body', async () => {
